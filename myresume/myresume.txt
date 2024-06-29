@@ -1,0 +1,66 @@
+
+
+Сетевой инженер Huawei
+
+
+
+Сертификаты:
+
+
+-Huawei Datacom Professional 2024
+-Cisco Enterprise Specialist 2021
+-Cisco R&S Associate 2019
+
+
+Публикации:
+
+- Автор 26 публикаций на хабре
+https://habr.com/ru/users/vasyo/publications/articles/
+
+- Автор десятка лабораторных Ansible на CloudEngine Huawei коммутаторах и более 100 траблшутинг кейсов.
+https://forum.huawei.com/enterprise/ru/collection/667481092967514112
+https://forum.huawei.com/enterprise/ru/collection/802696168260591616
+
+- Автор образовательного проекта "Квест-рум: цветные головоломки" на Huawei форуме.
+https://forum.huawei.com/enterprise/ru/collection/667481102241120256
+
+
+Опыт работы и достижения:
+
+Huawei, Москва, c 2021-по настоящее время
+сетевой инженер техподдержки:
+
+-разработал тех задания и провел около двадцати тех интервью среди новых кандидатов. 2023.
+-стал выделенным инженером техподдержки для кейсов от Yandex. 2022
+
+
+
+ЭР-Телеком Холдинг (tier 3 провайдер) https://ertelecom.ru/ru/company, Санкт-Петербург, Иркутск, 2013-2021
+сетевой инженер эксплуатации:
+
+-провел ночную модернизацию коммутатора ядра в Великом Новгороде с Cisco-Mikrotik на Huawei (EoIP на VPLS). 2020
+-добился перевода из Иркутска в Санкт-Петербург на должность инженер эксплуатации радиосети. 2019
+-подключил L2 "Безопасного города" через E1 РЖД. 2017.
+-выбран консультантом коммерческого департамента по тех вопросам. 2015
+
+
+
+
+OSPFv2, TCP, MPLS, CE Huawei, USG Huawei, VXLAN 
+
+
+Образование:
+
+-Сетевая академия Cisco в Иркутске (CCNA Routing and Switching). 2014.
+-Иркутский государственный университет, факультет филологии и журналистики. 2009.
+
+
+
+
+-Книга. John T. Moy OSPF Anatomy of an Internet Routing Protocol. 2024.
+-Книга. Official Cert Guide CCNP and CCIE Enterprise Core ENCOR 350-401. 2021.
+-Книга. Chris Bryant CCNP Switch Study Guide.2020.
+-Книга. Todd Lammle CCNA R&S Complete Study Guide. 2019. 
+
+
+

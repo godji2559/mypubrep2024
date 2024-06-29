@@ -1,0 +1,155 @@
+git remote add origin https://github.com/godji2559/hcie_project.git
+git push -fu origin master
+ 
+
+git init
+
+mkdir newfolder
+
+
+git config --global(или system,local) user.name "username"
+git config --global(или system,local)user.email "username"
+
+
+git remote add origin https://github.com/godji2559/git_commands.git
+git branch -M main
+git push -u origin main
+
+
+
+cat .git/config
+[core]
+        repositoryformatversion = 0
+        filemode = false
+        bare = false
+        logallrefupdates = true
+        symlinks = false
+        ignorecase = true
+[remote "origin"]
+        url = https://github.com/godji2559/hcie_project.git
+        fetch = +refs/heads/*:refs/remotes/origin/*
+[branch "master"]
+        remote = origin
+        merge = refs/heads/main
+
+
+$ git config --list
+diff.astextplain.textconv=astextplain
+filter.lfs.clean=git-lfs clean -- %f
+filter.lfs.smudge=git-lfs smudge -- %f
+filter.lfs.process=git-lfs filter-process
+filter.lfs.required=true
+http.sslbackend=openssl
+http.sslcainfo=C:/Program Files/Git/mingw64/etc/ssl/certs/ca-bundle.crt
+core.autocrlf=true
+core.fscache=true
+core.symlinks=false
+pull.rebase=false
+credential.helper=manager
+credential.https://dev.azure.com.usehttppath=true
+init.defaultbranch=master
+user.name=godgi2559
+user.email=godgi2559@yandex.ru
+core.repositoryformatversion=0
+core.filemode=false
+core.bare=false
+core.logallrefupdates=true
+core.symlinks=false
+core.ignorecase=true
+remote.origin.url=https://github.com/godji2559/hcie_project.git
+remote.origin.fetch=+refs/heads/*:refs/remotes/origin/*
+branch.master.remote=origin
+branch.master.merge=refs/heads/main
+
+$ git config --list --global
+user.name=godgi2559
+user.email=godgi2559@yandex.ru
+
+$ cat ~/.gitconfig
+[user]
+        name = godgi2559
+        email = godgi2559@yandex.ru
+
+
+
+git config --global core.editor 'путь'
+
+
+//чтобы сделать из "config" "c" (то есть вместо config теперь можно будет набрать просто c).
+Можно заменить большую команду "config --global"
+
+git config --global alias.c config
+
+
+// чтобы посмотреть все опции
+
+git config -h
+git help config
+
+// как искать по ключевому слову в листалке
+less
+:/(ключевое слово для поиска)
+n - поиск вперед
+shift+n - поиск назад
+:q выход
+
+
+
+git status
+
+git init
+
+//удалить репозиторий
+rm -rf .git
+
+
+git add .
+git commit
+git commit -m "Add a welcom script"
+
+
+
+$ git show --pretty=fuller
+commit 102a516366ffb9332236d89c7cb24a2097bae985 (HEAD -> master)
+Author:     godgi2559 <godgi2559@yandex.ru>
+AuthorDate: Sat Feb 24 19:34:10 2024 +0300
+Commit:     godgi2559 <godgi2559@yandex.ru>
+CommitDate: Sat Feb 24 19:34:10 2024 +0300
+
+    Test number 1
+
+    * test 2
+    * test 3
+
+diff --git a/readme.txt b/readme.txt
+new file mode 100644
+index 0000000..da0cef0
+--- /dev/null
++++ b/readme.txt
+@@ -0,0 +1 @@
++Hello, mister
+
+
+mkdir newfolder
+git add newfolder
+
+
+
+//удаляем файлы
+git rm (имя файла)
+git rm -r src (удаляет директорию)
+git add (имя файла)
+git commit -m "clean up" src/script.js
+
+
+//удаляем папку с файлами из index
+
+git rm -r --cached src
+
+
+
+//переименование файла
+git mv git_commands_begin begin
+
+
+

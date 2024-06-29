@@ -1,0 +1,22 @@
+git log --pretty=onelilne
+git log --oneline
+
+
+//чтобы смотреть логи с коммитами (что было изменено)
+
+git log --patch
+
+//комиты достижимые из всех ссылок
+
+git log --all --graph
+
+
+git log --grep add --oneline
+
+//а если добавить -p то покажет изменения
+
+git log --grep add --oneline -p
+
+
+//чтобы найти кто написал строчку (когда нужно найти того кто сделал ошибку)
+git blame
