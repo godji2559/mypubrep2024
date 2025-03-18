@@ -1,34 +1,35 @@
-DTS2024032709699
 
-Here is a stack of 3 members S5731-S48P4X (V200R021C10SPC600 + V200R021SPH220). 
-This is an access stack for wired users.
+This document contains a description of a bug in the Network Access Control 
+(NAC) function Huawei S series switches V200R21 firmware version. 
+The bug was identified and described in June 2024 by Huawei TAC network 
+engineer Tubaev Vasilii.
+The document was accepted by the RND, the bug was addmited and identified 
+as DTS2024032709699.
+The fix will be implemented in the release V200R024 in October/November 2024.
 
-Network Access Control (NAC) Unified Mode configured on the stack.
 
-Authentication-profile applied on each access edge port.
+[Expectations]
 
-Authentication-profile include dot1x and MAC address authentication.
+Here was a stack of 3 switches S5731-S48P4X (V200R021C10SPC600 + patch 
+V200R021SPH220). 
+This was an access stack for wired users.
+Network Access Control (NAC) Unified Mode was configured on the stack.
+Authentication-profile was applied on each access edge port.
+Authentication-profile included dot1x and MAC address authentication.
+Port-security was enabled on each edge port.
 
-And has following configuration:
+Configuration was as followed:
 
- 
-
- 
-
+#
 authentication-profile name XXXX
  dot1x-access-profile XXXX
  mac-access-profile XXXX
  authentication mode multi-authen max-user 3
  access-domain ozon_dot1x force
  authentication event authen-fail action authorize service-scheme authen-fail
- authentication event authen-server-down action authorize service-scheme authen-server-down
  authentication event authen-server-noreply action authorize keep
  authentication dot1x-mac-bypass
  link-down offline delay 5
- 
-
- 
-
 #
 dot1x-access-profile name XXXX
  dot1x timer reauthenticate-period 7200
@@ -36,32 +37,17 @@ dot1x-access-profile name XXXX
  dot1x reauthenticate
  authentication trigger-condition arp dhcp any-l2-packet
 #
-
 mac-access-profile name XXXX
  mac-authen reauthenticate
  authentication trigger-condition dhcp arp any-l2-packet
  mac-authen timer reauthenticate-period 7200
 #
-
- 
-
-#
- aaa
+aaa
  service-scheme authen-fail
-  acl-id 3000
+ acl-id 3000
 #
 acl name PERMIT-ALL 3000
  rule 5 permit ip
-#
-
- 
-
-
-
- 
-
- 
-
 #
 interface GigabitEthernet2/0/5
  auto speed 10 100
@@ -82,49 +68,35 @@ interface GigabitEthernet2/0/5
  broadcast-suppression packets 40
 #
 
- 
+According to the performed configuration, the customer's expectations 
+were as follows:
 
-
-
- 
-
-
-
- 
-
-According to this configuration, the customer's expectations were as follows:
-
-1.      port-security configuration has a higher priority. 
+1.  Port-security configuration has a higher priority. 
 Only two MAC addresses can be learned by the port. 
-In other words, in any scenario, even when receiving any kind of BUM traffic, 
-then only two MAC addresses (taken as a source MAC from the first two received packets) 
-will be learned and displayed by command «dis mac-address GigabitEthernet2/0/5».
+In other words, in any scenario, even when receiving any kind of 
+BUM traffic, then only two MAC addresses (one source MAC address from each of 
+the two received packets) will be learned and displayed by command 
+«display mac-address GigabitEthernet2/0/5».
 
- 
-
-2.      Since dot1x and MAC address authentication profiles include command 
+2.  Since dot1x and MAC address authentication profiles included command 
 «authentication trigger-condition arp dhcp any-l2-packet», then any ARP, 
-DHCP or L2 packet (include BUM) received by interface will trigger authentication process. 
+DHCP or L2 packet (include BUM) received by the interface will trigger 
+authentication process. 
 https://support.huawei.com/hedex/hdx.do?docid=EDOC1100247314&id=EN-US_CLIREF_0176369431. 
 “Trigger authentication process” means the access device (the stack switch) encapsulates 
 the received ARP, DHCP or L2 packet into a RADIUS Access-Request packet, and sends the 
 resulting packet to the RADIUS server.
 
- 
-
-3.      To prevent unauthorized users from occupying user entries on the device maliciously, 
-customer run the «authentication mode multi-authen max-user 3» command in the authentication profile view
- to configure the maximum number of 3 access users allowed on each interface. 
- https://support.huawei.com/hedex/hdx.do?docid=EDOC1100247314&id=EN-US_CLIREF_0176369431. 
- It was expected that only for 3 users from each port would be trigger authentication process. 
- And since port-security allowed only 2 MAC-addresses to be learned on the port, 
- therefore only for 2 users from each port would be trigger authentication process. 
- So, it was expected that MAC address table and «display access-user access-type dot1x» 
- would be look like that:
-
- 
-
- 
+3.  To prevent unauthorized users from occupying user entries on the device maliciously,
+customer run the «authentication mode multi-authen max-user 3» command in the 
+authentication profile view to configure the maximum number of 3 access users allowed 
+on each interface. 
+https://support.huawei.com/hedex/hdx.do?docid=EDOC1100247314&id=EN-US_CLIREF_0176369431. 
+It was expected that only for 3 users from each port would be trigger authentication 
+process. And since port-security allowed only 2 MAC-addresses to be learned on the port, 
+therefore only for 2 users from each port would be trigger authentication process. 
+It was expected that MAC address table and «display access-user access-type dot1x» 
+would be look like that:
 
 <swX>dis mac-address GigabitEthernet2/0/5
 -------------------------------------------------------------------------------
@@ -136,72 +108,55 @@ MAC Address    VLAN/VSI/BD                       Learned-From        Type
 ------------------------------------------------------------------------------
 Total items displayed = 2
 
-
 ===============================================================================
   ===============display access-user access-type dot1x wired===============
 ===============================================================================
  process  3:
- ------------------------------------------------------------------------------------------------------
- UserID  Username               IP address                               MAC            Status
- ------------------------------------------------------------------------------------------------------
- 1       user1                  10.XX.XX.201                             00e0-4cXX-XXX1 Pre-authen         
- 2       user2                  10.XX.XX.178                             00e0-4cXX-XXX9 Pre-authen         
+ ------------------------------------------------------------------------------
+ UserID  Username               IP address            MAC            Status
+ ------------------------------------------------------------------------------
+ 1       user1                  10.XX.XX.201       00e0-4cXX-XXX1 Pre-authen         
+ 2       user2                  10.XX.XX.178       00e0-4cXX-XXX9 Pre-authen         
  
- 
- 
+In other words, only 3 users from each interface must be added into the 
+users entries table. But since port-security limits the number of MAC addresses, 
+we should see only 2 entries here. 
+If 2 more MAC addresses are learned from another interface, then +2 more entries 
+will added in the user entries table.
 
-
-
-
- 
-
-In other words, only 3 users from each interface will be added to the user entries. 
-But since port-security limits the number of MAC addresses, we should see only 2 entries here. 
-If 2 more MAC addresses are learned from another interface, then +2 more entries will added in the 
-user entries table.
-
-«authentication mode multi-authen max-user 3» limits user entries for users in ANY user status 
-(Open, Success, Pre-authen, Client-no-resp, Fail-authorized). 
+Command «authentication mode multi-authen max-user 3» limits user entries for 
+users in ANY user status (Open, Success, Pre-authen, Client-no-resp, Fail-authorized). 
 It does not mean that user entries will be limited only for users in Success status. 
-For example, if user entries table already contain 3 users: first in status Open, second in status 
-Success, and last in status Pre-authen, this means no more free users entry available.
+For example, if user entries table already contain 3 users: first in status Open, 
+second in status Success, and last in status Pre-authen, this means there are no more 
+available users entries.
 
- 
-
-4.      Since authentication profile include command «authentication event authen-fail action authorize 
-service-scheme authen-fail» and associated ACL permit all IPs, 
-it was expected that the stack switch grants all right to all users who have failed in authentication. 
+4.  Since authentication profile include command «authentication event authen-fail
+action authorize service-scheme authen-fail» and associated ACL permit all IPs, 
+it was expected that the stack switch grants all right to all users who have failed 
+in authentication. 
 https://support.huawei.com/hedex/hdx.do?docid=EDOC1100247314&id=EN-US_CLIREF_0176369660
 
 It was expected that all users who have failed in authentication will have status 
-« Fail-authorized» under command «display access-user».
-
+«Fail-authorized» under command «display access-user».
 https://support.huawei.com/hedex/hdx.do?docid=EDOC1100247314&id=EN-US_CLIREF_0176369444
 
- 
+[Failure scenario]:
 
- 
+1.  Accidentally another access switch was connected to the port GigabitEthernet2/0/5
+of the stack.
 
- 
+2.  The connected switch had many video devices connected to it, which means they do 
+send multicast traffic.
 
-[Here's what really happened]:
+3.  All the video devices were from another network, and did not require authentication.
 
-1.      Accidentally another access switch was connected to the port GigabitEthernet2/0/5.
+4.  Due STP was disabled on the connected switch, bpdu protection function did
+not shutdown the port.
 
-2.      This connected switch had video devices connected to it. 
-These video devices generated a lot of multicast and broadcast traffic.
+5.  152 MAC-addresses was learned by interface GigabitEthernet2/0/5:
 
-3.      All these video devices were from another network, and did not require authentication.
-
-4.      We suspect the switch was connected at 2024-06-11 07:29:49. 
-The incident was found 2024-06-19 11:28:00. Resolved 2024-06-19 14:44:10 
-(GigabitEthernet2/0/5 was shutdown).
-
-5.      152 MAC-addresses was learned by interface GigabitEthernet2/0/5 (logs_mac.txt):
-
-
-
-<swX>dis mac-address GigabitEthernet2/0/5
+<swX>display mac-address GigabitEthernet2/0/5
 -------------------------------------------------------------------------------
 MAC Address    VLAN/VSI/BD                       Learned-From        Type
 -------------------------------------------------------------------------------
@@ -219,105 +174,114 @@ f023-XXXX-XXX5 104/-/-                           GE2/0/5             authen
 -------------------------------------------------------------------------------
 Total items displayed = 152
 
- 
+6.  GigabitEthernet2/0/5 started dropped multicast and broadcast traffic:
 
- 
+#Jun 19 2024 14:40:05+03:00 swX SECE/4/TRAFFICSUPPRESSION_DROP_ALARM:OID 
+1.3.6.1.4.1.2011.5.25.32.4.1.14.3 Incoming packet loss occurs due to traffic 
+suppression. (IfIndex=118, IfName=GigabitEthernet2/0/5, BroadcastPktDropped=988160, 
+MulticastPktDropped=15402, UnicastPktDropped=0, KnownMulticastPktDropped=0, 
+KnownUnicastPktDropped=0)
 
-It is clear that «port-security max-mac-num 2» command did not take effect here on the interface. 
-152 MAC-addresses was learned instead of 2.
-
- 
-
-6.      GigabitEthernet2/0/5 started dropped multicast and broadcast traffic (logs_mac.txt):
-
- 
-
-#Jun 19 2024 14:40:05+03:00 sw2.z383 SECE/4/TRAFFICSUPPRESSION_DROP_ALARM:OID 
-1.3.6.1.4.1.2011.5.25.32.4.1.14.3 Incoming packet loss occurs due to traffic suppression. 
-(IfIndex=118, IfName=GigabitEthernet2/0/5, BroadcastPktDropped=988160, MulticastPktDropped=15402, 
-UnicastPktDropped=0, KnownMulticastPktDropped=0, KnownUnicastPktDropped=0)
-
- 
-
-7.      The number of NAC users reaches the upper limit:
-
- 
-
-2024-06-19 14:36:21+03:00 swX %%01CM/3/ALLOCUSERFAIL(l)[57]:Slot=1,Vcpu=3;The number of NAC users 
-reaches the upper limit.(UserIP:192.168.XX.XX,Mac:f023-XXXX-XXXX,Interface:GigabitEthernet2/0/5)
-
- 
-
-Jun 19 2024 12:13:44+03:00 swX AAA/4/NACMaxUserAlarm:Slot=1,Vcpu=4;OID 1.3.6.1.4.1.2011.5.2.2.2.0.107 
-The number of NAC users reached the maximum.(Slot:All User-num:1000 Threshold:100%)
-
-2024-06-19 12:13:44+03:00 swX %%01CM/3/ALLOCUSERFAIL(l)[1321127]:Slot=1,Vcpu=3;The number of NAC users 
-reaches the upper limit.(UserIP:192.168.XX.XX,Mac:f023-XXXX-XXXX,Interface:GigabitEthernet2/0/5)
-
- 
-
-a.Considering that there are usually no more than 50 users on the stack, it looks strange that users 
-entry table has reached the upper limit of 1000 users. There were 50 users on the stack when issue 
-occurred, and 152 came from another switch from port GigabitEthernet2/0/5. So the total should be 202 
-users in NAC users entry table. Not 1000.
-
-It looks like every incoming L2 packet that arrived on the interface GigabitEthernet2/0/5 triggered 
-authentication over and over again for each MAC-address in MAC-address table.
-
-The logs show that every 5 minutes the stack tries to authenticate each MAC over and over again:
-
- 
+7.  The logs displayed that every 5-7 minutes the stack tries to authenticate each 
+MAC learned by interface over and over again:
 
 2024-06-18 23:00:50+03:00 swX %%01CM/5/USER_ACCESSRESULT(s)[1228265]:Slot=1,Vcpu=3;
-[USER_INFO_AUTHENTICATION]DEVICEMAC:5c-XX-XX-XX-XX-d0;DEVICENAME:swX;USER:;MAC:f0-XX-XX-XX-XX;
-IPADDRESS:192.168.X.XX;IPV6ADDRESS:-;TIME:1718740839;ZONE:UTC+0300;DAYLIGHT:false;ERRCODE:
-4294967295;RESULT:Pre-authen;CIB ID:1890;INTERFACE:GigabitEthernet2/0/5;ACCESS TYPE:None;RDSIP:-;
-Portal TYPE:-;AUTHID=635145626;AUTHPROTOCOL:-;
+[USER_INFO_AUTHENTICATION]DEVICEMAC:5c-XX-XX-XX-XX-d0;DEVICENAME:swX;USER:;
+MAC:f0-XX-XX-XX-XX;IPADDRESS:192.168.X.XX;IPV6ADDRESS:-;TIME:1718740839;ZONE:UTC+0300;
+DAYLIGHT:false;ERRCODE:4294967295;RESULT:Pre-authen;CIB ID:1890;INTERFACE:
+GigabitEthernet2/0/5;ACCESS TYPE:None;RDSIP:-;Portal TYPE:-;AUTHID=635145626;
+AUTHPROTOCOL:-;
 
+after almost 6 minutes later:
 
-
+2024-06-18 23:06:46+03:00 swX %%01CM/5/USER_ACCESSRESULT(s)[1228903]:Slot=1,Vcpu=3;
+[USER_INFO_AUTHENTICATION]DEVICEMAC:5c-XX-XX-XX-XX-d0;DEVICENAME:swX;USER:;
+MAC:f0-XX-XX-XX-XX;IPADDRESS:192.168.X.XX;IPV6ADDRESS:-;TIME:1718741195;ZONE:UTC+0300;
+DAYLIGHT:false;ERRCODE:4294967295;RESULT:Pre-authen;CIB ID:1068;INTERFACE:
+GigabitEthernet2/0/5;ACCESS TYPE:None;RDSIP:-;Portal TYPE:-;AUTHID=719466857;
+AUTHPROTOCOL:-;
  
+8.  The number of NAC users reaches the upper limit on the stack:
 
-This indicates that the NAC user entry table processed queries incorrectly, 
-it did not have time to delete outdated entries or duplicate entries.
+2024-06-19 14:36:21+03:00 swX %%01CM/3/ALLOCUSERFAIL(l)[57]:Slot=1,Vcpu=3;The number 
+of NAC users reaches the upper limit.(UserIP:192.168.XX.XX,Mac:f023-XXXX-XXXX,
+Interface:GigabitEthernet2/0/5)
 
- 
+Jun 19 2024 12:13:44+03:00 swX AAA/4/NACMaxUserAlarm:Slot=1,Vcpu=4;OID 1.3.6.1.4.1.
+2011.5.2.2.2.0.107 The number of NAC users reached the maximum.(Slot:All User-num:1000 
+Threshold:100%)
 
-b.And it is clear that «authentication mode multi-authen max-user 3» 
-command did not take effect here. Only 3 new entries had to be added to the NAC users entry table. 
-According to the logs, authentication requests were triggered by stack for each of the 152 MAC addresses 
-in the mac address table. This means that all 152 entries (not 3) were added in the NAC users entry table.
+Wired users connected to the stack began to complain that they could not connect to 
+the network or lost their connection.
 
- 
 
---
+[Analysis]:
 
-[Resume]:
+1.  It was clear that «port-security max-mac-num 2» command did not take effect: 
+152 MAC-addresses was learned instead of 2. But this is not a software error. One of 
+the precautions in doc reads:"When both NAC authentication and port security are enabled 
+on an interface, MAC addresses that fail to be authenticated are not converted to secure 
+MAC addresses. Instead, they are learned as authentication MAC addresses on the interface.
+After authentication succeeds, the MAC addresses are converted to secure MAC addresses."
+https://support.huawei.com/hedex/hdx.do?docid=EDOC1100247314&id=EN-US_CLIREF_0177118125
+
+In other words, port-security only works for "secure" MAC addresses. 
+In order for the dynamic MAC address to converted to secure MAC addresses, the user must 
+be successfully authenticated.
+In the failure scenario none of the 152 MAC addresses could be successfully authenticated, 
+therefore, as we can see, they received the status authentication "authen" and was not 
+rectricted by port security.
+
+2.  Considering that there are usually no more than 50 users on the stack, it looks 
+strange that users entry table has reached the upper limit of 1000 users. There were 50 
+users on the stack when issue occurred, and 152 came from another switch. So the total 
+should be 202 users in NAC users entry table. Not 1000.
+It is clear that «authentication mode multi-authen max-user 3» command did not take effect. 
+Only 3 new entries had to be added to the NAC users entry table. According the concept
+these users had to get the Pre-authen status first, and then the Fail-authorized status.
+Unfortunately, we do not have a picture of what status users had at that time, since we 
+did not observe the incident during its course, but only analyzed the logs. 
+Theoretically, and in our test conditions, this should be exactly like that.
+
+The malfunction of the command «authentication mode multi-authen max-user 3» explains why
+authentication requests were triggered by stack for each of the 152 MAC addresses in the 
+mac address table, but that doesn't explain why the number of NAC users reaches the upper 
+limit on the stack of 1000 users.
+
+3.  Every incoming L2 packet that arrived on the interface GigabitEthernet2/0/5 
+triggered authentication over and over again for each MAC-address. It was occured 
+every 5-7 minutes for each MAC-address, despite the fact that the user has already received 
+its status and was added in NAC user entry table. We have already seen similar behavior 
+in another bug, when DHCP packets triggered authentication over and over again, 
+despite the fact that the user was already authenticated (we had to disable the trigger 
+for DHCP packets).
+The process number for each authentication request was unique, and for two identical 
+MAC addresses, two records with different process numbers can be generated. 
+At this point, we think NAC was adding new records to the entry table without deleting the 
+old ones, even though they belonged to the same user.
+Clearing old entries should have happened, of course, but it doesn't happen in time. 
+Given the amount of traffic, there were significantly more add requests than NAC was able 
+to clear old entries per unit of time.
+
+[Resume]
 
 From all of the above, it is clear that the switch has a security hole, 
 the NAC algorithms are not working correctly and must be fixed. 
 Even such a small number of broadcast and multicast packets from 152 devices caused the 
-failure of the NAC function, in which existing users began to lose connectivity and could not 
-online again. 
-
-Please pay attention of this issue.
+failure of the NAC function, in which existing users began to lose connectivity and 
+could not get online again. 
 
  
-
-
- PSE:
-
-Maximum number of users on an interface, authentication has a higher priority than port-security.
+[RND reply]
 
 Current implementation mechanism of device is as following: 
 device authenticates all the mac-addresses that send arp/dhcp/any-l2-packet packets, 
 therefore 152 MAC addresses are displayed in the "display mac-address" command output.
 Theoretically, the "display access-user" command output also should show that 152 users
- are in the pre-authen state. Therefore, we have been expecting to collect the 
- previously mentioned commands for further confirmation.
+are in the pre-authen state. 
 
-We admit that the current implementation mechanism has problems, so we confirm with the R&D 
-that this mechanism will be modified in R24 version.
-After the modification, as per current customer configuration, 
-only 2 mac-addresses are displayed in the "display mac-address" command output and only 3 users 
-are displayed in the "display access-user" command output.
+We admit that the current implementation mechanism has problems, so we confirm that 
+this mechanism will be modified in R24 version.
+After the modification, as per current customer configuration, only 2 mac-addresses 
+are displayed in the "display mac-address" command output and only 3 users are 
+displayed in the "display access-user" command output.
