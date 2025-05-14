@@ -1,6 +1,6 @@
 ## 1. *Создание личного репозитория*
 
-Регистрируемся на [gitlab] (https://gitlab.com/users/sign_up)
+Регистрируемся на [gitlab](https://gitlab.com/users/sign_up)
 Указываем будем ли мы работать одни или в составе группы.
 
 Заходим в свой профиль и ждем на - Create new project > Create blank project
